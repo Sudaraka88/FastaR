@@ -1,0 +1,63 @@
+---
+output: rmarkdown::github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# FastaR v.0.1.0
+FastaR is a simple and fast R package to manipulate genomic multi sequence alignments (MSA) in Fasta format. You can use it for several things:
+
+1.    Load a fasta file into R, with or without filtering
+2.    Filter and extract SNPs
+3.    Extract genomic positions of your choice 
+
+FastaR can also create a SNP only Fasta file (like [snp-sites](http://sanger-pathogens.github.io/snp-sites/)). It will also write the extracted SNP positions and sequence names in separate text files.
+
+## Installation
+
+`FastaR` is currently only available on github. It can be installed with `devtools`:
+
+```{r, eval = FALSE}
+install.packages("devtools")
+devtools::install_github("Sudaraka88/FastaR")
+```
+
+## Usage
+Detailed help is available in the package itself, please run `help(package="FastaR")`.
+
+### Extracting SNPs from a genomic MSA
+```{r, eval = FALSE}
+library(FastaR)
+
+aln_path <- system.file("extdata", "test.fa", package = "FastaR") # path to toy alignment 
+snp.dat <- extract_snps_from_fasta(aln_path)
+```
+This will create an R character matrix `snp.dat` containing the filtered SNPs. Additionally, three files will be written to the current working directory:
+
+  1.    `out.fa` - SNP only alignment in fasta format
+  2.    `out.fa.pos` - SNP positions as a text file (single column)
+  3.    `out.fa.seqs` - Sequence names in the fasta file
+  
+>**Note** For customised filtering, you can change the minor allele (`maf_freq=0.01`) and gap/ambiguous character (`gap_freq=0.15`) frequencies from the default values.
+
+### Extracting Genomic Positions of your choice
+```{r, eval = FALSE}
+snp.dat <- extract_positions_from_fasta(aln_path, c(1,2,4,9))
+```
+Outcome will be similar to previous SNP extraction (except some sites with be monomorphic).
+
+>**Note** Previous files will be overwritten. You can provide an alternative filename to both these functions using `save_path`.
+
+## Advanced Usage
+### Extracting SNPs in Sparse Matrix format
+Sparse matrix represntation of SNPs can be used to speed up numerous computationally intensive post-processing tasks ^[See [LDWeaver](https://github.com/Sudaraka88/LDWeaver/blob/main/R/computePairwiseMI.R) for an example use case. There, genome-wide Linkage Disequilibrium is rapidly estimated using weighted mutual information and the implementation is based on sparse matrices.].
+```{r, eval = FALSE}
+snp.dat <- extract_snps_from_fasta_sparse(aln_path)
+```
+Function options are similar to `extract_snps_from_fasta()`, but the output will only be returned to R. 
+
+
+
+
