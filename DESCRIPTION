@@ -1,0 +1,20 @@
+Package: FastaR
+Type: Package
+Title: Functions to manipulate genomic fasta multiple sequence alignments (MSA)
+Version: 0.1.0
+Authors@R: person("Sudaraka", "Mallawaarachchi", email = "smallawaarachchi@gmail.com", role = c("aut", "cre"))
+Maintainer: Sudaraka Mallawaarachchi <smallawaarachchi@gmail.com>
+Description: Set of fast R functions written with C++/Rcpp to perform tasks such as SNP extraction from genomic multiple sequence alignments in Fasta format.
+License: GPL (>=3) + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Depends: R (>= 4.0.0),
+Imports: 
+        Rcpp,
+        utils,
+        Matrix
+LinkingTo: Rcpp
+RoxygenNote: 7.2.3
+URL: https://github.com/Sudaraka88/FastaR
+BugReports: https://github.com/Sudaraka88/FastaR/issues
+Biarch: TRUE
