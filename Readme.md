@@ -1,6 +1,9 @@
 
 # FastaR v.0.1.1
 
+[![R](https://github.com/Sudaraka88/FastaR/workflows/R-CMD-check/badge.svg)](https://github.com/Sudaraka88/FastaR/actions)
+[![DOI](https://zenodo.org/badge/703342753.svg)](https://zenodo.org/doi/10.5281/zenodo.10042489)
+
 FastaR is a simple and fast R package to manipulate genomic multi
 sequence alignments (MSA) in Fasta format. You can use it for several
 things:
