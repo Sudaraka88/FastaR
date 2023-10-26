@@ -21,6 +21,9 @@
 #' }
 #' @export
 extract_snps_from_fasta <- function(aln_path, gap_freq = 0.15, maf_freq = 0.01, is_N_minor_allele = F, save_path = "out.fa", return_to_environment = T){
+
+  t_global = Sys.time()
+
   aln_path = normalizePath(aln_path) # C safety (~ character causes crash)
   if(!file.exists(aln_path)) stop(paste("Can't locate file", aln_path))
   if(is_N_minor_allele == T) {
@@ -43,13 +46,15 @@ extract_snps_from_fasta <- function(aln_path, gap_freq = 0.15, maf_freq = 0.01, 
 
   if(!is.null(save_path)) FastaR::write_fasta(snps, save_path)
 
+  cat(paste("\n\n ** All done in", round(difftime(Sys.time(), t_global, units = "mins"), 3), "m ** \n"))
+
   if(return_to_environment) return(snps)
 }
 
 
 #' extract_positions_from_fasta
 #'
-#' Function to extract positions from fasta alignment.
+#' Function to extract nucleotides at chosen positions from a fasta alignment.
 #'
 #' @importFrom Rcpp sourceCpp
 #'
@@ -195,7 +200,7 @@ extract_snps_from_fasta_sparse <- function(aln_path, gap_freq = 0.15, maf_freq =
 #'
 #' Function to write a sequence matrix to fasta
 #'
-#' @importFrom utils write.table
+#' @importFrom utils write.table txtProgressBar setTxtProgressBar
 #'
 #' @param snps snps in matrix format
 #' @param fa_path path to save fasta
@@ -207,6 +212,7 @@ extract_snps_from_fasta_sparse <- function(aln_path, gap_freq = 0.15, maf_freq =
 #' }
 #' @export
 write_fasta <- function(snps, fa_path){
+  cat("Writing outputs... \n")
   seq_path = paste(fa_path, ".seqs", sep = "")
   pos_path = paste(fa_path, ".pos", sep = "")
 
@@ -215,10 +221,21 @@ write_fasta <- function(snps, fa_path){
   if(file.exists(seq_path)) {unlink(seq_path); cat("WARNING! Overwriting", seq_path, "\n")}
   if(file.exists(pos_path)) {unlink(pos_path); cat("WARNING! Overwriting", pos_path, "\n")}
 
+  pb = txtProgressBar(min = 1, max = nrow(snps), initial = 1)
+
   for(i in 1:nrow(snps)){
+
     write.table(x = paste(">",rownames(snps)[i], sep = ""), file = fa_path, append = T, quote = F, row.names = F, col.names = F)
     write.table(x = paste(snps[i,], collapse = ""), file = fa_path, append = T, quote = F, row.names = F, col.names = F)
+
+    setTxtProgressBar(pb,i)
+
   }
+  close(pb)
+
   write.table(rownames(snps), seq_path, col.names = F, row.names = F, quote = F)
   write.table(colnames(snps), pos_path, col.names = F, row.names = F, quote = F)
+
+  cat("\nDone!")
+
 }

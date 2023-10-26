@@ -1,7 +1,7 @@
 Package: FastaR
 Type: Package
 Title: Functions to manipulate genomic fasta multiple sequence alignments (MSA)
-Version: 0.1.0
+Version: 0.1.1
 Authors@R: person("Sudaraka", "Mallawaarachchi", email = "smallawaarachchi@gmail.com", role = c("aut", "cre"))
 Maintainer: Sudaraka Mallawaarachchi <smallawaarachchi@gmail.com>
 Description: Set of fast R functions written with C++/Rcpp to perform tasks such as SNP extraction from genomic multiple sequence alignments in Fasta format.

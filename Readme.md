@@ -1,5 +1,5 @@
 
-# FastaR v.0.1.0
+# FastaR v.0.1.1
 
 FastaR is a simple and fast R package to manipulate genomic multi
 sequence alignments (MSA) in Fasta format. You can use it for several

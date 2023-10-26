@@ -6,7 +6,7 @@ output: rmarkdown::github_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# FastaR v.0.1.0
+# FastaR v.0.1.1
 FastaR is a simple and fast R package to manipulate genomic multi sequence alignments (MSA) in Fasta format. You can use it for several things:
 
 1.    Load a fasta file into R, with or without filtering

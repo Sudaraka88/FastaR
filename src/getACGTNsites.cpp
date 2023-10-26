@@ -1,5 +1,11 @@
 #include <Rcpp.h>
-//#include "kseq.h"
+
+// for unix-alike machines only
+#if !defined(WIN32) && !defined(__WIN32) && !defined(__WIN32__)
+#include <unistd.h>
+#include <Rinterface.h>
+#endif
+
 #include "kseq2.h" //with gz reading
 #include <iostream>
 #include <fcntl.h>
@@ -15,6 +21,7 @@ List extractAlnParam2(std::string file) {
   Rcout << "Checking alignment: ";
   int n = 0;
   int l = 0;
+  int k = 0; // counter for update
   // kseq seq;
 
   gzFile fp_, fp;
@@ -45,6 +52,8 @@ List extractAlnParam2(std::string file) {
   NumericMatrix allele_counts(5, seq_length);
   Rcpp::StringVector seq_names;
   // while((l = ks.read(seq)) >= 0) {
+
+
   while((l = kseq_read(seq)) >= 0) {
     int s_len_t = strlen(seq->seq.s);
     seq_names.push_back(seq->name.s);
@@ -54,6 +63,28 @@ List extractAlnParam2(std::string file) {
       break;
     }
     n++;
+
+    // add some output for very large alignments
+    k++;
+    // Rcout << k << "k";
+    if(k == 1){
+#if !defined(WIN32) && !defined(__WIN32) && !defined(__WIN32__)
+      std::stringstream strs;
+      strs << "processed: " << n;
+      std::string temp_str = strs.str();
+      char const* char_type = temp_str.c_str();
+
+      REprintf("\r");
+      REprintf("%s", char_type);
+      REprintf("\r");
+
+      R_FlushConsole();
+      R_CheckUserInterrupt();
+      k = 0;
+#endif
+    }
+
+
   }
   Rcout << n << " seqs found \n";
   // close(fp);
@@ -74,9 +105,11 @@ List extractAlnParam(std::string file, int filter, double gap_thresh, double maf
   // filter = 0, default in spydrpick
   // filter = 1, relaxed
   // default gap_thresh = 0.15, maf_thresh = 0.01
+
   Rcout << "Checking alignment: ";
   int n = 0;
   int l = 0;
+  int k = 0; // counter for update
   // kseq seq;
 
   gzFile fp_, fp;
@@ -98,7 +131,7 @@ List extractAlnParam(std::string file, int filter, double gap_thresh, double maf
   kseq_destroy(seq);
   gzclose(fp_);
 
-  Rcout << "Extracting seq info: ";
+  Rcout << "Extracting seq info: \n";
   // int fp = open(f, O_RDONLY);
   // kstream<int, FunctorRead> ks(fp, r);
   fp = gzopen(f, "r");
@@ -142,13 +175,43 @@ List extractAlnParam(std::string file, int filter, double gap_thresh, double maf
     //   }
     // }
     n++;
+
+    // add some output for very large alignments
+    k++;
+    // Rcout << k << "k";
+    if(k == 1000){
+#if !defined(WIN32) && !defined(__WIN32) && !defined(__WIN32__)
+      std::stringstream strs;
+      strs << "... reading through: " << n << " ...";
+      std::string temp_str = strs.str();
+      char const* char_type = temp_str.c_str();
+
+      REprintf("\r");
+      REprintf("%s", char_type);
+      REprintf("\r");
+
+      R_FlushConsole();
+      R_CheckUserInterrupt();
+      k = 0;
+      // **DEBUG** //
+//#if !defined(WIN32) && !defined(__WIN32) && !defined(__WIN32__)
+      // Sleep for a second
+      //usleep(1000000);
+//#endif
+      // **DEBUG** //
+
+
+#endif
+    }
+
   }
-  Rcout << n << " seqs found \n";
+  Rcout << '\n';
+  Rcout << n << " seqs found in total \n";
   // close(fp);
   kseq_destroy(seq);
   gzclose(fp);
 
-  Rcout << "Filtering SNPs: ";
+  Rcout << "Filtering SNPs:";
   // Rcout << n  << '\n';
   // allele_counts contain info required to filter...
   IntegerVector idx_ngss = IntegerVector::create(0, 1, 2, 3);
@@ -237,6 +300,9 @@ List extractAlnParam(std::string file, int filter, double gap_thresh, double maf
 
 // [[Rcpp::export(name = '.getSNPs')]]
 std::vector<char> getSNPs(std::string file, int n_seq, int n_snp, std::vector<int> POS){
+
+  Rcout << "Getting SNPs: \n";
+
   gzFile fp2;
   kseq_t *seq;
   const char * f = file.c_str();
@@ -249,6 +315,8 @@ std::vector<char> getSNPs(std::string file, int n_seq, int n_snp, std::vector<in
   std::vector<char> SNPS; SNPS.reserve(2*n_seq*n_snp);
 
   int l = 0;
+  int n = 0;
+  int k = 0;
   while((l = kseq_read(seq)) >= 0) {
     // k = 1;
 
@@ -256,7 +324,39 @@ std::vector<char> getSNPs(std::string file, int n_seq, int n_snp, std::vector<in
       temp_char = seq->seq.s[j-1];
       SNPS.push_back(temp_char);
     }
+
+    n++;
+
+    // add some output for very large alignments
+    k++;
+    // Rcout << k << "k";
+    if(k == 1000){
+#if !defined(WIN32) && !defined(__WIN32) && !defined(__WIN32__)
+      std::stringstream strs;
+      strs << "... reading through: " << n << " ...";
+      std::string temp_str = strs.str();
+      char const* char_type = temp_str.c_str();
+
+      REprintf("\r");
+      REprintf("%s", char_type);
+      REprintf("\r");
+
+      R_FlushConsole();
+      R_CheckUserInterrupt();
+      k = 0;
+      // **DEBUG** //
+      //#if !defined(WIN32) && !defined(__WIN32) && !defined(__WIN32__)
+      // Sleep for a second
+      //usleep(1000000);
+      //#endif
+      // **DEBUG** //
+
+
+#endif
+    }
+
   }
+  Rcout << "\nDone! \n";
   // List snps =  List::create(Named("snps") = SNPS);
   return(SNPS);
 

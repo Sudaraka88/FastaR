@@ -25,7 +25,7 @@ WARNING: might hang in systems with insufficient RAM. Use at your own risk.}
 If return_to_environment=T, R character matrix with requested positions. colnames: positions, rownames: sequence names
 }
 \description{
-Function to extract positions from fasta alignment.
+Function to extract nucleotides at chosen positions from a fasta alignment.
 }
 \examples{
 \dontrun{
